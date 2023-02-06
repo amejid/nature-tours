@@ -52,11 +52,13 @@ const TourDetails = () => {
       <section className="section-header">
         <div className="header__hero">
           <div className="header__hero-overlay">&nbsp;</div>
-          <img
-            src={`${remoteImg}/tours/${tour?.imageCover}`}
-            alt={tour?.name}
-            className="header__hero-img"
-          />
+          {tour?.imageCover && (
+            <img
+              src={`${remoteImg}/tours/${tour?.imageCover}`}
+              alt={tour?.name}
+              className="header__hero-img"
+            />
+          )}
         </div>
         <div className="heading-box">
           <h1 className="heading-primary">
@@ -153,21 +155,22 @@ const TourDetails = () => {
       </section>
 
       <section className="section-pictures">
-        {tour?.images.map((image, idx) => (
-          <div key={idx} className="picture-box">
-            <img
-              className={`picture-box__img picture-box__img--${idx + 1}`}
-              src={`${remoteImg}/tours/${image}`}
-              alt={`${tour.name} Tour ${idx + 1}`}
-            />
-          </div>
-        ))}
+        {tour?.images &&
+          tour?.images.map((image, idx) => (
+            <div key={idx} className="picture-box">
+              <img
+                className={`picture-box__img picture-box__img--${idx + 1}`}
+                src={`${remoteImg}/tours/${image}`}
+                alt={`${tour.name} Tour ${idx + 1}`}
+              />
+            </div>
+          ))}
       </section>
 
       <section className="section-reviews">
         <div className="reviews">
           {reviews.map((review) => (
-            <div className="reviews__card">
+            <div key={review.id} className="reviews__card">
               <div className="reviews__avatar">
                 <img
                   src={`${remoteImg}/users/${review.user.photo}`}
@@ -178,8 +181,9 @@ const TourDetails = () => {
               </div>
               <p className="reviews__text">{review.review}</p>
               <div className="reviews__rating">
-                {[1, 2, 3, 4, 5].map((star) => (
+                {[1, 2, 3, 4, 5].map((star, idx) => (
                   <svg
+                    key={idx}
                     className={`reviews__star reviews__star--${
                       review.rating >= star ? 'active' : 'inactive'
                     }`}
@@ -198,16 +202,20 @@ const TourDetails = () => {
           <div className="cta__img cta__img--logo">
             <img src={whiteLogo} alt="Natours logo" className="" />
           </div>
-          <img
-            src={`${remoteImg}/tours/${tour?.images[0]}`}
-            alt=""
-            className="cta__img cta__img--1"
-          />
-          <img
-            src={`${remoteImg}/tours/${tour?.images[1]}`}
-            alt=""
-            className="cta__img cta__img--2"
-          />
+          {tour?.images && (
+            <>
+              <img
+                src={`${remoteImg}/tours/${tour?.images[0]}`}
+                alt=""
+                className="cta__img cta__img--1"
+              />
+              <img
+                src={`${remoteImg}/tours/${tour?.images[1]}`}
+                alt=""
+                className="cta__img cta__img--2"
+              />
+            </>
+          )}
 
           <div className="cta__content">
             <h2 className="heading-secondary">What are you waiting for?</h2>

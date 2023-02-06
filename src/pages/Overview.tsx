@@ -52,7 +52,6 @@ const Overview = () => {
   useEffect(() => {
     const fetchTours = async () => {
       const { data } = await axios.get('http://localhost:5000/api/v1/tours');
-      console.log(data.data.data);
       setTours(data.data.data);
     };
 
