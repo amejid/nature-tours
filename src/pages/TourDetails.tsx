@@ -1,12 +1,29 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { remoteImg } from '../App';
 import iconSvg from '../img/icons.svg';
+import whiteLogo from '../img/logo-white.png';
 import { Tour } from './Overview';
+
+type ReviewUser = {
+  _id: string;
+  name: string;
+  photo: string;
+};
+
+type Review = {
+  id: string;
+  review: string;
+  rating: number;
+  createdAt: string;
+  tour: string;
+  user: ReviewUser;
+};
 
 const TourDetails = () => {
   const [tour, setTour] = useState<Tour>();
-  const [reviews, setReviews] = useState();
+  const [reviews, setReviews] = useState<Review[]>([]);
   const { id } = useParams();
 
   const paragraphs = tour?.description.split('\n');
@@ -33,6 +50,14 @@ const TourDetails = () => {
   return (
     <>
       <section className="section-header">
+        <div className="header__hero">
+          <div className="header__hero-overlay">&nbsp;</div>
+          <img
+            src={`${remoteImg}/tours/${tour?.imageCover}`}
+            alt={tour?.name}
+            className="header__hero-img"
+          />
+        </div>
         <div className="heading-box">
           <h1 className="heading-primary">
             <span>{tour?.name}</span>
@@ -103,7 +128,7 @@ const TourDetails = () => {
               {tour?.guides.map((guide) => (
                 <div key={guide._id} className="overview-box__detail">
                   <img
-                    src={`img/users/${guide.photo}`}
+                    src={`${remoteImg}/users/${guide.photo}`}
                     alt="Lead guide"
                     className="overview-box__img"
                   />
@@ -132,11 +157,69 @@ const TourDetails = () => {
           <div key={idx} className="picture-box">
             <img
               className={`picture-box__img picture-box__img--${idx + 1}`}
-              src={`img/${image}`}
+              src={`${remoteImg}/tours/${image}`}
               alt={`${tour.name} Tour ${idx + 1}`}
             />
           </div>
         ))}
+      </section>
+
+      <section className="section-reviews">
+        <div className="reviews">
+          {reviews.map((review) => (
+            <div className="reviews__card">
+              <div className="reviews__avatar">
+                <img
+                  src={`${remoteImg}/users/${review.user.photo}`}
+                  alt={review.user.name}
+                  className="reviews__avatar-img"
+                />
+                <h6 className="reviews__user">{review.user.name}</h6>
+              </div>
+              <p className="reviews__text">{review.review}</p>
+              <div className="reviews__rating">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <svg
+                    className={`reviews__star reviews__star--${
+                      review.rating >= star ? 'active' : 'inactive'
+                    }`}
+                  >
+                    <use xlinkHref={`${iconSvg}#icon-star`}></use>
+                  </svg>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="section-cta">
+        <div className="cta">
+          <div className="cta__img cta__img--logo">
+            <img src={whiteLogo} alt="Natours logo" className="" />
+          </div>
+          <img
+            src={`${remoteImg}/tours/${tour?.images[0]}`}
+            alt=""
+            className="cta__img cta__img--1"
+          />
+          <img
+            src={`${remoteImg}/tours/${tour?.images[1]}`}
+            alt=""
+            className="cta__img cta__img--2"
+          />
+
+          <div className="cta__content">
+            <h2 className="heading-secondary">What are you waiting for?</h2>
+            <p className="cta__text">
+              {tour?.duration} days. 1 adventure. Infinite memories. Make it
+              yours today!
+            </p>
+            <button className="btn btn--green span-all-rows">
+              Book tour now!
+            </button>
+          </div>
+        </div>
       </section>
     </>
   );

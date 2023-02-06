@@ -4,6 +4,8 @@ import Overview from './pages/Overview';
 import { Route, Routes } from 'react-router-dom';
 import TourDetails from './pages/TourDetails';
 
+export const remoteImg = 'http://localhost:5000/img';
+
 function App() {
   return (
     <>
