@@ -17,7 +17,7 @@ const Navbar = () => {
         <img src={logoImg} alt="Natours logo" />
       </div>
       <nav className="nav nav--user">
-        {currentUser?.token ? (
+        {currentUser ? (
           <>
             <button
               type="button"
@@ -28,11 +28,11 @@ const Navbar = () => {
             </button>
             <NavLink to="/" className="nav__el">
               <img
-                src={`${remoteImg}/users/${currentUser.user.photo}`}
-                alt={currentUser.user.name}
+                src={`${remoteImg}/users/${currentUser.photo}`}
+                alt={currentUser.name}
                 className="nav__user-img"
               />
-              <span>{currentUser.user.name.split(' ')[0]}</span>
+              <span>{currentUser.name.split(' ')[0]}</span>
             </NavLink>
           </>
         ) : (

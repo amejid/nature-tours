@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { createContext, ReactNode, useState } from 'react';
 
 type Props = {
@@ -12,32 +13,34 @@ type User = {
   role: string;
 };
 
-type CurrentUser = {
-  user: User;
-  token: string;
-};
-
 export type UserContent = {
-  currentUser: CurrentUser | undefined;
-  login: (user: CurrentUser) => void;
+  currentUser: User | undefined;
+  login: (user: User) => void;
   logout: () => void;
 };
 
 export const UserContext = createContext<UserContent>({
   currentUser: undefined,
-  login: (user: CurrentUser) => null,
+  login: (user: User) => null,
   logout: () => null,
 });
 
 export const UserProvider = ({ children }: Props) => {
-  const [currentUser, setCurrentUser] = useState<CurrentUser>();
+  const [currentUser, setCurrentUser] = useState<User>();
 
-  const login = (user: CurrentUser) => {
+  const login = (user: User) => {
     setCurrentUser(user);
   };
 
-  const logout = () => {
-    setCurrentUser(undefined);
+  const logout = async () => {
+    try {
+      await axios.get('http://localhost:5000/api/v1/users/logout', {
+        withCredentials: true,
+      });
+      setCurrentUser(undefined);
+    } catch (err: any) {
+      console.log(err.response.data.message);
+    }
   };
 
   const value = { currentUser, login, logout };

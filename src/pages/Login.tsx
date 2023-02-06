@@ -33,11 +33,12 @@ const Login = () => {
         {
           email,
           password,
-        }
+        },
+        { withCredentials: true }
       );
-      const { token } = data;
+
       const user = data.data.user;
-      login({ token, user });
+      login(user);
       setShowSuccess(true);
     } catch (err: any) {
       setError(err.response.data.message);
