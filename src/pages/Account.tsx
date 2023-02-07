@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { FormEvent, useContext, useEffect, useState } from 'react';
+import { ChangeEvent, FormEvent, useContext, useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { remoteImg } from '../App';
 import { UserContext } from '../context/UserContext';
@@ -17,6 +17,7 @@ const Account = () => {
   const [user, setUser] = useState<User>();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [selectedFile, setSelectedFile] = useState<Blob | string>('');
   const [password, setPassword] = useState('');
   const [passwordCurrent, setPasswordCurrent] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
@@ -46,15 +47,18 @@ const Account = () => {
     e.preventDefault();
 
     try {
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('email', email);
+      formData.append('photo', selectedFile);
+
       const { data } = await axios.patch(
         'http://localhost:5000/api/v1/users/updateMe',
-        { name, email },
+        formData,
         { withCredentials: true }
       );
       login(data.data.user);
-      setPassword('');
-      setPasswordConfirm('');
-      setPasswordCurrent('');
+      setUser(data.data.user);
     } catch (err: any) {
       console.log(err.response.data.message);
     }
@@ -69,10 +73,19 @@ const Account = () => {
         { password, passwordCurrent, passwordConfirm },
         { withCredentials: true }
       );
+      setPassword('');
+      setPasswordConfirm('');
+      setPasswordCurrent('');
       login(data.data.user);
     } catch (err: any) {
       console.log(err.response.data.message);
     }
+  };
+
+  const selectFile = (e: ChangeEvent<HTMLInputElement>) => {
+    const { files } = e.target;
+    const selectedFiles = files as FileList;
+    setSelectedFile(selectedFiles?.[0]);
   };
 
   return (
@@ -218,6 +231,7 @@ const Account = () => {
                   accept="image/*"
                   id="photo"
                   className="form__upload"
+                  onChange={selectFile}
                 />
                 <label htmlFor="photo">Choose new photo</label>
               </div>

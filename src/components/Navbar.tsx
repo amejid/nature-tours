@@ -27,11 +27,13 @@ const Navbar = () => {
               Logout
             </button>
             <NavLink to="/account" className="nav__el">
-              <img
-                src={`${remoteImg}/users/${currentUser.photo}`}
-                alt={currentUser.name}
-                className="nav__user-img"
-              />
+              {currentUser.photo && (
+                <img
+                  src={`${remoteImg}/users/${currentUser.photo}`}
+                  alt={currentUser.name}
+                  className="nav__user-img"
+                />
+              )}
               <span>{currentUser.name.split(' ')[0]}</span>
             </NavLink>
           </>
