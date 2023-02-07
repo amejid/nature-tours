@@ -1,7 +1,8 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { FormEvent, useContext, useEffect, useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { remoteImg } from '../App';
+import { UserContext } from '../context/UserContext';
 import iconSvg from '../img/icons.svg';
 
 type User = {
@@ -16,6 +17,11 @@ const Account = () => {
   const [user, setUser] = useState<User>();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [passwordCurrent, setPasswordCurrent] = useState('');
+  const [passwordConfirm, setPasswordConfirm] = useState('');
+  const { login } = useContext(UserContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -30,10 +36,44 @@ const Account = () => {
         setEmail(data.data.data.email);
       } catch (err: any) {
         console.log(err.response.data.message);
+        navigate('/');
       }
     };
     fetchUser();
-  }, []);
+  }, [navigate]);
+
+  const handleUpdateData = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      const { data } = await axios.patch(
+        'http://localhost:5000/api/v1/users/updateMe',
+        { name, email },
+        { withCredentials: true }
+      );
+      login(data.data.user);
+      setPassword('');
+      setPasswordConfirm('');
+      setPasswordCurrent('');
+    } catch (err: any) {
+      console.log(err.response.data.message);
+    }
+  };
+
+  const handleUpdatePassword = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      const { data } = await axios.patch(
+        'http://localhost:5000/api/v1/users/updateMyPassword',
+        { password, passwordCurrent, passwordConfirm },
+        { withCredentials: true }
+      );
+      login(data.data.user);
+    } catch (err: any) {
+      console.log(err.response.data.message);
+    }
+  };
 
   return (
     <main className="main">
@@ -93,50 +133,52 @@ const Account = () => {
               </NavLink>
             </li>
           </ul>
-          <div className="admin-nav">
-            <h5 className="admin-nav__heading">Admin</h5>
-            <ul className="side-nav">
-              <li>
-                <NavLink to="/">
-                  <svg>
-                    <use xlinkHref={`${iconSvg}#icon-map`}></use>
-                  </svg>
-                  Manage tours
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/">
-                  <svg>
-                    <use xlinkHref={`${iconSvg}#icon-users`}></use>
-                  </svg>
-                  Manage users
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/">
-                  <svg>
-                    <use xlinkHref={`${iconSvg}#icon-star`}></use>
-                  </svg>
-                  Manage reviews
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/">
-                  <svg>
-                    <use xlinkHref={`${iconSvg}#icon-briefcase`}></use>
-                  </svg>
-                  Manage bookings
-                </NavLink>
-              </li>
-            </ul>
-          </div>
+          {user?.role === 'admin' && (
+            <div className="admin-nav">
+              <h5 className="admin-nav__heading">Admin</h5>
+              <ul className="side-nav">
+                <li>
+                  <NavLink to="/">
+                    <svg>
+                      <use xlinkHref={`${iconSvg}#icon-map`}></use>
+                    </svg>
+                    Manage tours
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/">
+                    <svg>
+                      <use xlinkHref={`${iconSvg}#icon-users`}></use>
+                    </svg>
+                    Manage users
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/">
+                    <svg>
+                      <use xlinkHref={`${iconSvg}#icon-star`}></use>
+                    </svg>
+                    Manage reviews
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/">
+                    <svg>
+                      <use xlinkHref={`${iconSvg}#icon-briefcase`}></use>
+                    </svg>
+                    Manage bookings
+                  </NavLink>
+                </li>
+              </ul>
+            </div>
+          )}
         </nav>
         <div className="user-view__content">
           <div className="user-view__form-container">
             <h2 className="heading-secondary ma-bt-md">
               Your account settings
             </h2>
-            <form className="form form-user-data">
+            <form className="form form-user-data" onSubmit={handleUpdateData}>
               <div className="form__group">
                 <label htmlFor="name" className="form__label">
                   Name
@@ -189,7 +231,10 @@ const Account = () => {
           <div className="line">&nbsp;</div>
           <div className="user-view__form-container">
             <h2 className="heading-secondary ma-bt-md">Password change</h2>
-            <form className="form form-user-password">
+            <form
+              className="form form-user-password"
+              onSubmit={handleUpdatePassword}
+            >
               <div className="form__group">
                 <label htmlFor="password-current" className="form__label">
                   Current password
@@ -201,6 +246,7 @@ const Account = () => {
                   placeholder="••••••••"
                   required
                   minLength={8}
+                  onChange={(e) => setPasswordCurrent(e.target.value)}
                 />
               </div>
               <div className="form__group">
@@ -214,6 +260,7 @@ const Account = () => {
                   placeholder="••••••••"
                   required
                   minLength={8}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
               <div className="form__group ma-bt-lg">
@@ -227,6 +274,7 @@ const Account = () => {
                   placeholder="••••••••"
                   required
                   minLength={8}
+                  onChange={(e) => setPasswordConfirm(e.target.value)}
                 />
               </div>
               <div className="form__group right">

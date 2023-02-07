@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { createContext, ReactNode, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 type Props = {
   children?: ReactNode;
@@ -27,6 +28,7 @@ export const UserContext = createContext<UserContent>({
 
 export const UserProvider = ({ children }: Props) => {
   const [currentUser, setCurrentUser] = useState<User>();
+  const navigate = useNavigate();
 
   const login = (user: User) => {
     setCurrentUser(user);
@@ -38,6 +40,7 @@ export const UserProvider = ({ children }: Props) => {
         withCredentials: true,
       });
       setCurrentUser(undefined);
+      navigate('/');
     } catch (err: any) {
       console.log(err.response.data.message);
     }
